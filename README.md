@@ -3,6 +3,7 @@ This is a wrapper for the [libfreenect](https://github.com/OpenKinect/libfreenec
 Usage
 =====
 $ make main
+
 $ ./main
 
 TODO
