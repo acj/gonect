@@ -16,21 +16,68 @@ limitations under the License.
 //
 // Author: Adam Jensen <acj@linuxguy.org>
 
-package main
+package driver
+
+/*
+#cgo CFLAGS: -I/usr/local/include/libfreenect 
+#cgo LDFLAGS: -lfreenect -lfreenect_sync -lcv -lcxcore -lhighgui
+#include <stdlib.h>
+#include <stdio.h>
+#include <libfreenect.h>
+#include <libfreenect_sync.h>
+#include <opencv/cv.h>
+#include <opencv/highgui.h>
+*/
+import "C"
 
 import (
     "gonect"
     "fmt"
     "time"
+	"os"
+	"opencv"
+	"unsafe"
 )
 
-func main() {
+func Run() {
 	gonect.Init()
 	fmt.Println("Number of devices: ", gonect.GetNumDevices())
-    TestTilting()
-    TestLed()
+    //TestTilting(0)
+    //TestLed(0)
+	TestVideo(0)
+	//TestDepth(0)
 	gonect.Stop()
 	gonect.Shutdown()
+}
+
+func TestVideo(device_index int) {
+	win := opencv.NewWindow("image")
+	for {
+		data, _ := gonect.GetVideo(0)
+		//out := C.freenect_sync_get_video(&data, &timestamp, C.int(device_index), C.FREENECT_VIDEO_RGB)
+		cedge := opencv.CreateImage(640, 480, opencv.IPL_DEPTH_8U, 3)
+		defer cedge.Release()
+		C.cvSetData(unsafe.Pointer(cedge), data, C.int(1*3*640))
+		win.ShowImage(cedge)
+		if opencv.WaitKey(10) == 27 {
+			os.Exit(0)
+        }
+	}
+}
+
+func TestDepth(device_index int) {
+	win := opencv.NewWindow("image")
+	for {
+		data, _ := gonect.GetDepth(0)
+		//out := C.freenect_sync_get_depth(&data, &timestamp, C.int(device_index), C.FREENECT_DEPTH_11BIT)
+		cedge := opencv.CreateImage(640, 480, opencv.IPL_DEPTH_8U, 3)
+		defer cedge.Release()
+		C.cvSetData(unsafe.Pointer(cedge), data, C.int(1*3*640))
+		win.ShowImage(cedge)
+		if opencv.WaitKey(10) == 27 {
+			os.Exit(0)
+        }
+	}
 }
 
 func TestTilting() {

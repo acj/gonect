@@ -25,7 +25,6 @@ package gonect
 #include <stdio.h>
 #include <libfreenect.h>
 #include <libfreenect_sync.h>
-
 freenect_context* f_ctx;
 
 freenect_raw_tilt_state* create_tilt_state() {
@@ -35,9 +34,10 @@ freenect_raw_tilt_state* create_tilt_state() {
 
 int freenect_init_proxy() {
     return freenect_init(&f_ctx, NULL);
- }
+}
 */
 import "C"
+import "unsafe"
 
 type TiltState struct {
     Accelerometer_x int16
@@ -49,7 +49,6 @@ type TiltState struct {
 
 type TiltStatusCode uint
 const (
-    _ = iota
     STOPPED = 0			        /* 0x00 */
     MOVEMENT_LIMIT = 1		    /* 0x01 */
     MOVING_TO_NEW_POSITION = 4	/* 0x04 */
@@ -90,14 +89,24 @@ func Init() uint {
 	return uint(C.freenect_init_proxy())
 }
 
-func GetVideo() uint {
-	// TODO
-    return 0
+func GetVideo(device_index int) (unsafe.Pointer, uint32) {
+	var data unsafe.Pointer
+	var timestamp C.uint32_t
+	out := C.freenect_sync_get_video(&data, &timestamp, C.int(device_index), C.FREENECT_VIDEO_RGB)
+	if out > 0 {
+		return nil, 0
+	}
+    return data, uint32(timestamp)
 }
 
-func GetDepth() uint {
-	// TODO
-    return 0
+func GetDepth(device_index int) (unsafe.Pointer, uint32) {
+	var data unsafe.Pointer
+	var timestamp C.uint32_t
+	out := C.freenect_sync_get_depth(&data, &timestamp, C.int(device_index), C.FREENECT_DEPTH_11BIT)
+	if out > 0 {
+		return nil, 0
+	}
+    return data, uint32(timestamp)
 }
 
 func GetTiltDegs(ts TiltState) float32 {
