@@ -31,7 +31,7 @@ package driver
 import "C"
 
 import (
-    "gonect"
+    "freenect"
     "fmt"
     "time"
 	"opencv"
@@ -39,22 +39,22 @@ import (
 )
 
 func Run() {
-	gonect.Init()
-	fmt.Println("Number of devices: ", gonect.GetNumDevices())
+	freenect.Init()
+	fmt.Println("Number of devices: ", freenect.GetNumDevices())
     //TestTilting(0)
     //TestLed(0)
 	TestVideo(0)
 	TestIR(0)
 	TestDepth(0)
-	gonect.Stop()
-	gonect.Shutdown()
+	freenect.Stop()
+	freenect.Shutdown()
 }
 
 func TestVideo(device_index int) {
 	fmt.Println("Testing RGB video. Press ESC to stop.")
 	win := opencv.NewWindow("image")
 	for {
-		data, _ := gonect.GetVideo(0, gonect.FREENECT_VIDEO_RGB)
+		data, _ := freenect.GetVideo(0, freenect.FREENECT_VIDEO_RGB)
 		cedge := opencv.CreateImage(640, 480, opencv.IPL_DEPTH_8U, 3)
 		C.cvSetData(unsafe.Pointer(cedge), data, C.int(1*3*640))
 		win.ShowImage(cedge)
@@ -68,7 +68,7 @@ func TestIR(device_index int) {
 	fmt.Println("Testing depth. Press ESC to stop.")
 	win := opencv.NewWindow("image")
 	for {
-		data, _ := gonect.GetDepth(0, gonect.FREENECT_VIDEO_IR_8BIT)
+		data, _ := freenect.GetDepth(0, freenect.FREENECT_VIDEO_IR_8BIT)
 		cedge := opencv.CreateImage(640, 488, opencv.IPL_DEPTH_8U, 1)
 		C.cvSetData(unsafe.Pointer(cedge), data, C.int(1*1*640))
 		win.ShowImage(cedge)
@@ -82,7 +82,7 @@ func TestDepth(device_index int) {
 	fmt.Println("Testing depth. Press ESC to stop.")
 	win := opencv.NewWindow("image")
 	for {
-		data, _ := gonect.GetDepth(0, gonect.FREENECT_DEPTH_11BIT)
+		data, _ := freenect.GetDepth(0, freenect.FREENECT_DEPTH_11BIT)
 		cedge := opencv.CreateImage(640, 480, opencv.IPL_DEPTH_8U, 1)
 		defer cedge.Release()
 		C.cvSetData(unsafe.Pointer(cedge), data, C.int(1*1*640))
@@ -95,52 +95,52 @@ func TestDepth(device_index int) {
 
 func TestTilting(device_index int) {
     fmt.Println("Tilting down")
-    gonect.SetTiltDegs(-30, 0)
-	ts := gonect.TiltStatusCode(0)
+    freenect.SetTiltDegs(-30, 0)
+	ts := freenect.TiltStatusCode(0)
 	for i := 0; i < 3; i++ {
 		time.Sleep(1000000000)
-		ts = gonect.GetTiltStatus(gonect.GetTiltState(0), device_index)
-		fmt.Println("\tTilt status: ", ts, "(", gonect.GetTiltDegs(gonect.GetTiltState(0)), " degrees)")
+		ts = freenect.GetTiltStatus(freenect.GetTiltState(0), device_index)
+		fmt.Println("\tTilt status: ", ts, "(", freenect.GetTiltDegs(freenect.GetTiltState(0)), " degrees)")
 	}
     fmt.Println("Tilting up")
-    gonect.SetTiltDegs(30, 0)
+    freenect.SetTiltDegs(30, 0)
 	for i := 0; i < 3; i++ {
 		time.Sleep(1000000000)
-		ts = gonect.GetTiltStatus(gonect.GetTiltState(0), device_index)
-		fmt.Println("\tTilt status: ", ts, "(", gonect.GetTiltDegs(gonect.GetTiltState(0)), " degrees)")
+		ts = freenect.GetTiltStatus(freenect.GetTiltState(0), device_index)
+		fmt.Println("\tTilt status: ", ts, "(", freenect.GetTiltDegs(freenect.GetTiltState(0)), " degrees)")
 	}
     fmt.Println("Tilting level")
-    gonect.SetTiltDegs(0, 0)
+    freenect.SetTiltDegs(0, 0)
 	for i := 0; i < 3; i++ {
 		time.Sleep(1000000000)
-		ts = gonect.GetTiltStatus(gonect.GetTiltState(0), device_index)
-		fmt.Println("\tTilt status: ", ts, "(", gonect.GetTiltDegs(gonect.GetTiltState(0)), " degrees)")
+		ts = freenect.GetTiltStatus(freenect.GetTiltState(0), device_index)
+		fmt.Println("\tTilt status: ", ts, "(", freenect.GetTiltDegs(freenect.GetTiltState(0)), " degrees)")
 	}
 }
 
 func TestLed(device_index int) {
 	fmt.Println("Changing LED status")
 	fmt.Println("\tOFF")
-    gonect.SetLed(gonect.LED_OFF, device_index)
+    freenect.SetLed(freenect.LED_OFF, device_index)
     time.Sleep(1000000000)
 	fmt.Println("\tGREEN")
-    gonect.SetLed(gonect.LED_GREEN, device_index)
+    freenect.SetLed(freenect.LED_GREEN, device_index)
     time.Sleep(1000000000)
 	fmt.Println("\tRED")
-    gonect.SetLed(gonect.LED_RED, device_index)
+    freenect.SetLed(freenect.LED_RED, device_index)
     time.Sleep(1000000000)
 	fmt.Println("\tYELLOW")
-    gonect.SetLed(gonect.LED_YELLOW, device_index)
+    freenect.SetLed(freenect.LED_YELLOW, device_index)
     time.Sleep(1000000000)
 	fmt.Println("\tBLINK YELLOW")
-    gonect.SetLed(gonect.LED_BLINK_YELLOW, device_index)
+    freenect.SetLed(freenect.LED_BLINK_YELLOW, device_index)
     time.Sleep(3000000000)
 	fmt.Println("\tBLINK_GREEN")
-    gonect.SetLed(gonect.LED_BLINK_GREEN, device_index)
+    freenect.SetLed(freenect.LED_BLINK_GREEN, device_index)
     time.Sleep(3000000000)
 	fmt.Println("\tBLINK RED/YELLOW")
-    gonect.SetLed(gonect.LED_BLINK_RED_YELLOW, device_index)
+    freenect.SetLed(freenect.LED_BLINK_RED_YELLOW, device_index)
     time.Sleep(3000000000)
 	fmt.Println("\tOFF")
-    gonect.SetLed(gonect.LED_OFF, device_index)
+    freenect.SetLed(freenect.LED_OFF, device_index)
 }

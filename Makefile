@@ -2,8 +2,8 @@ include $(GOROOT)/src/Make.inc
 
 PKGDIR=$(GOROOT)/pkg/$(GOOS)_$(GOARCH)
 
-TARG=gonect
-CGOFILES=gonect.go
+TARG=freenect
+CGOFILES=freenect.go
 
 include $(GOROOT)/src/Make.pkg
 

@@ -16,7 +16,7 @@ limitations under the License.
 //
 // Author: Adam Jensen <acj@linuxguy.org>
 
-package gonect
+package freenect
 
 /*
 #cgo CFLAGS: -I/usr/local/include/libfreenect 
