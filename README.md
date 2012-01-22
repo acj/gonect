@@ -1,10 +1,14 @@
 This is a wrapper for the [libfreenect](https://github.com/OpenKinect/libfreenect) library written in Go.
 
-Usage
-=====
-$ make main
+Installation
+============
+$ make install
 
-$ ./main
+Sample Usage
+============
+$ cd demo
+
+$ make main; ./main
 
 TODO
 ====
@@ -12,4 +16,7 @@ TODO
 * ~~Tilting~~
 * ~~LED colors~~
 * ~~Get number of devices~~
-* Video (get and set depth, start/stop, etc)
+* Video (via opencv)
+    * ~~RGB Camera~~
+	* Depth Camera
+	* IR Camera
