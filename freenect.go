@@ -40,55 +40,59 @@ import "C"
 import "unsafe"
 
 type TiltState struct {
-    Accelerometer_x int16
-    Accelerometer_y int16
-    Accelerometer_z int16
-    Tilt_angle	    int8
-    Tilt_status     TiltStatusCode
+	Accelerometer_x int16
+	Accelerometer_y int16
+	Accelerometer_z int16
+	Tilt_angle      int8
+	Tilt_status     TiltStatusCode
 }
 
 type TiltStatusCode uint
+
 const (
-    STOPPED = 0			        /* 0x00 */
-    MOVEMENT_LIMIT = 1		    /* 0x01 */
-    MOVING_TO_NEW_POSITION = 4	/* 0x04 */
+	STOPPED                = 0 /* 0x00 */
+	MOVEMENT_LIMIT         = 1 /* 0x01 */
+	MOVING_TO_NEW_POSITION = 4 /* 0x04 */
 )
 
 type LedOptions uint
+
 const (
 	LED_OFF              = 0
-	LED_GREEN            = 1 
-	LED_RED              = 2 
-	LED_YELLOW           = 3 
-	LED_BLINK_YELLOW     = 4 
-	LED_BLINK_GREEN      = 5 
+	LED_GREEN            = 1
+	LED_RED              = 2
+	LED_YELLOW           = 3
+	LED_BLINK_YELLOW     = 4
+	LED_BLINK_GREEN      = 5
 	LED_BLINK_RED_YELLOW = 6
 )
 
 type VideoFormat uint
+
 const (
-    FREENECT_VIDEO_RGB             = 0 /**< Decompressed RGB mode (demosaicing
-										 done by libfreenect) */
-    FREENECT_VIDEO_BAYER           = 1 /**< Bayer compressed mode (raw 
-										 information from camera) */
-    FREENECT_VIDEO_IR_8BIT         = 2 /**< 8-bit IR mode  */
-    FREENECT_VIDEO_IR_10BIT        = 3 /**< 10-bit IR mode */
-    FREENECT_VIDEO_IR_10BIT_PACKED = 4 /**< 10-bit packed IR mode */
-    FREENECT_VIDEO_YUV_RGB         = 5 /**< YUV RGB mode */
-    FREENECT_VIDEO_YUV_RAW         = 6 /**< YUV Raw mode */
-//    FREENECT_VIDEO_DUMMY           = 2147483647 /**< Dummy value to force enum
-//												  to be 32 bits wide */
+	FREENECT_VIDEO_RGB = 0 /**< Decompressed RGB mode (demosaicing
+	done by libfreenect) */
+	FREENECT_VIDEO_BAYER = 1 /**< Bayer compressed mode (raw 
+	information from camera) */
+	FREENECT_VIDEO_IR_8BIT         = 2 /**< 8-bit IR mode  */
+	FREENECT_VIDEO_IR_10BIT        = 3 /**< 10-bit IR mode */
+	FREENECT_VIDEO_IR_10BIT_PACKED = 4 /**< 10-bit packed IR mode */
+	FREENECT_VIDEO_YUV_RGB         = 5 /**< YUV RGB mode */
+	FREENECT_VIDEO_YUV_RAW         = 6 /**< YUV Raw mode */
+	//    FREENECT_VIDEO_DUMMY           = 2147483647 /**< Dummy value to force enum
+	//												  to be 32 bits wide */
 )
 
 type DepthFormat uint
+
 const (
-    FREENECT_DEPTH_11BIT        = 0 /**< 11 bit depth information in one uint16_t/pixel */
-    FREENECT_DEPTH_10BIT        = 1 /**< 10 bit depth information in one uint16_t/pixel */
-    FREENECT_DEPTH_11BIT_PACKED = 2 /**< 11 bit packed depth information */
-    FREENECT_DEPTH_10BIT_PACKED = 3 /**< 10 bit packed depth information */
-    FREENECT_DEPTH_REGISTERED   = 4 /**< processed depth data in mm, aligned to 640x480 RGB */
-    FREENECT_DEPTH_MM           = 5 /**< depth to each pixel in mm, but left unaligned to RGB image */
-//    FREENECT_DEPTH_DUMMY        = 2147483647 /**< Dummy value to force enum to be 32 bits wide */
+	FREENECT_DEPTH_11BIT        = 0 /**< 11 bit depth information in one uint16_t/pixel */
+	FREENECT_DEPTH_10BIT        = 1 /**< 10 bit depth information in one uint16_t/pixel */
+	FREENECT_DEPTH_11BIT_PACKED = 2 /**< 11 bit packed depth information */
+	FREENECT_DEPTH_10BIT_PACKED = 3 /**< 10 bit packed depth information */
+	FREENECT_DEPTH_REGISTERED   = 4 /**< processed depth data in mm, aligned to 640x480 RGB */
+	FREENECT_DEPTH_MM           = 5 /**< depth to each pixel in mm, but left unaligned to RGB image */
+	//    FREENECT_DEPTH_DUMMY        = 2147483647 /**< Dummy value to force enum to be 32 bits wide */
 )
 
 func ConvertCTiltStructToGo(c_ts *C.freenect_raw_tilt_state) TiltState {
@@ -122,7 +126,7 @@ func GetVideo(device_index int, format VideoFormat) (unsafe.Pointer, uint32) {
 	if out > 0 {
 		return nil, 0
 	}
-    return data, uint32(timestamp)
+	return data, uint32(timestamp)
 }
 
 func GetDepth(device_index int, format VideoFormat) (unsafe.Pointer, uint32) {
@@ -132,7 +136,7 @@ func GetDepth(device_index int, format VideoFormat) (unsafe.Pointer, uint32) {
 	if out > 0 {
 		return nil, 0
 	}
-    return data, uint32(timestamp)
+	return data, uint32(timestamp)
 }
 
 func GetTiltDegs(ts TiltState) float32 {
@@ -142,16 +146,16 @@ func GetTiltDegs(ts TiltState) float32 {
 
 // Set the tilt angle (in degrees)
 func SetTiltDegs(degs int, device_index int) uint {
-    c_degs := C.int(degs)
-    c_ndx := C.int(device_index)
-    return uint(C.freenect_sync_set_tilt_degs(c_degs, c_ndx))
+	c_degs := C.int(degs)
+	c_ndx := C.int(device_index)
+	return uint(C.freenect_sync_set_tilt_degs(c_degs, c_ndx))
 }
 
 func GetTiltState(device_index int) TiltState {
-    c_ts := (*C.freenect_raw_tilt_state)(C.create_tilt_state())
-    C.freenect_sync_get_tilt_state(&c_ts, C.int(device_index))
+	c_ts := (*C.freenect_raw_tilt_state)(C.create_tilt_state())
+	C.freenect_sync_get_tilt_state(&c_ts, C.int(device_index))
 	ts := ConvertCTiltStructToGo(c_ts)
-    return ts
+	return ts
 }
 
 func GetTiltStatus(ts TiltState, device_index int) TiltStatusCode {
@@ -160,8 +164,8 @@ func GetTiltStatus(ts TiltState, device_index int) TiltStatusCode {
 }
 
 func SetLed(color uint, device_index int) uint {
-    C.freenect_sync_set_led(C.freenect_led_options(color), C.int(device_index))
-    return 0
+	C.freenect_sync_set_led(C.freenect_led_options(color), C.int(device_index))
+	return 0
 }
 
 func GetNumDevices() uint {

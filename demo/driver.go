@@ -53,7 +53,7 @@ func TestVideo(device_index int) {
 	fmt.Println("Testing RGB video. Press ESC to stop.")
 	for {
 		data, _ := freenect.GetVideo(device_index, freenect.FREENECT_VIDEO_RGB)
-		cedge := C.cvCreateImageHeader(C.cvSize(640,480), 8, 3)
+		cedge := C.cvCreateImageHeader(C.cvSize(640, 480), 8, 3)
 		C.cvSetData(unsafe.Pointer(cedge), data, C.int(1*3*640))
 		C.cvCvtColor(unsafe.Pointer(cedge), unsafe.Pointer(cedge), C.CV_RGB2BGR)
 		C.cvShowImage(C.CString("RGB"), unsafe.Pointer(cedge))
@@ -67,7 +67,7 @@ func TestIR(device_index int) {
 	fmt.Println("Testing infrared. Press ESC to stop.")
 	for {
 		data, _ := freenect.GetVideo(device_index, freenect.FREENECT_VIDEO_IR_8BIT)
-		cedge := C.cvCreateImageHeader(C.cvSize(640,480), 8, 1)
+		cedge := C.cvCreateImageHeader(C.cvSize(640, 480), 8, 1)
 		C.cvSetData(unsafe.Pointer(cedge), data, C.int(1*1*640))
 		C.cvShowImage(C.CString("IR"), unsafe.Pointer(cedge))
 		if C.cvWaitKey(10) == 27 {
@@ -80,7 +80,7 @@ func TestDepth(device_index int) {
 	fmt.Println("Testing depth. Press ESC to stop.")
 	for {
 		data, _ := freenect.GetDepth(0, freenect.FREENECT_DEPTH_11BIT)
-		cedge := C.cvCreateImageHeader(C.cvSize(640,480), 16, 1)
+		cedge := C.cvCreateImageHeader(C.cvSize(640, 480), 16, 1)
 		C.cvSetData(unsafe.Pointer(cedge), data, C.int(1*2*640))
 		C.cvShowImage(C.CString("Depth"), unsafe.Pointer(cedge))
 		if C.cvWaitKey(10) == 27 {
