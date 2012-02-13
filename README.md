@@ -18,5 +18,9 @@ TODO
 * ~~Get number of devices~~
 * Video (via opencv)
     * ~~RGB Camera~~
-	* Depth Camera
-	* IR Camera
+	* ~~Depth Camera~~
+	* ~~IR Camera~~
+* Microphones
+
+* ~~Wrap libfreenect "C sync" functions~~
+* Wrap libfreenect async functions
