@@ -20,7 +20,7 @@ package main
 
 import (
 	"fmt"
-//	"freenect"
+	"freenect"
 	"os"
 	"text/scanner"
 	"strconv"
@@ -48,13 +48,15 @@ func main() {
 			s.Scan()
 			arg, _ = strconv.Atoi(s.TokenText())
 			if arg == OutOfRange { break }
-			//freenect.SetTiltDegs(arg, 0)
-			fmt.Printf("Tilting to %d degrees\n", arg)
+
+			freenect.SetTiltDegs(arg, 0)
 
 			cmd = ""
 			arg = OutOfRange
 		case cmd == "led":
-			fmt.Println("Cycling LEDs")
+			s.Scan()
+			led_string := s.TokenText()
+			flash_led(led_string)
 			break
 		case cmd == "quit":
 			return
@@ -63,4 +65,30 @@ func main() {
 		fmt.Printf("gonect> ")
 		s.Scan()
 	} 
+}
+
+func flash_led(led string) {
+	switch {
+	case led == "off":
+		freenect.SetLed(freenect.LED_OFF, 0)
+		break
+	case led == "green":
+		freenect.SetLed(freenect.LED_GREEN, 0)
+		break
+	case led == "red":
+		freenect.SetLed(freenect.LED_RED, 0)
+		break
+	case led == "yellow":
+		freenect.SetLed(freenect.LED_YELLOW, 0)
+		break
+	case led == "blink_yellow":
+		freenect.SetLed(freenect.LED_BLINK_YELLOW, 0)
+		break
+	case led == "blink_green":
+		freenect.SetLed(freenect.LED_BLINK_GREEN, 0)
+		break
+	case led == "blink_red_yellow":
+		freenect.SetLed(freenect.LED_BLINK_RED_YELLOW, 0)
+		break
+	}
 }
