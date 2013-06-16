@@ -19,7 +19,6 @@ limitations under the License.
 package main
 
 import (
-	"demo"
 	"fmt"
 	"freenect"
 	"os"
@@ -63,16 +62,19 @@ func main() {
 			flash_led(d, led_string)
 			break
 		case cmd == "rgb_frame":
-			driver.TestRGBAFrame(0)
+			s.Scan()
+			filename := s.TokenText()
+			freenect.SaveRGBAFrame(d, filename)
 			break
-		case cmd == "rgb_video":
-			freenect.TestVideo(d)
+		case cmd == "ir_frame":
+			s.Scan()
+			filename := s.TokenText()
+			freenect.SaveIRFrame(d, filename)
 			break
-		case cmd == "ir_video":
-			freenect.TestIR(d)
-			break
-		case cmd == "depth_video":
-			freenect.TestDepth(d)
+		case cmd == "depth_frame":
+			s.Scan()
+			filename := s.TokenText()
+			freenect.SaveDepthFrame(d, filename)
 			break
 		case cmd == "quit":
 			return
