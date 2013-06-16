@@ -18,7 +18,7 @@ limitations under the License.
 
 package main
 
-import "driver"
+import "freenect"
 
 func main() {
 	driver.Run()

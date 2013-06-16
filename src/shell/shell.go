@@ -19,6 +19,7 @@ limitations under the License.
 package main
 
 import (
+	"demo"
 	"fmt"
 	"freenect"
 	"os"
@@ -57,6 +58,18 @@ func main() {
 			s.Scan()
 			led_string := s.TokenText()
 			flash_led(led_string)
+			break
+		case cmd == "rgb_frame":
+			driver.TestRGBAFrame(0)
+			break
+		case cmd == "rgb_video":
+			driver.TestVideo(0)
+			break
+		case cmd == "ir_video":
+			driver.TestIR(0)
+			break
+		case cmd == "depth_video":
+			driver.TestDepth(0)
 			break
 		case cmd == "quit":
 			return
