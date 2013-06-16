@@ -1,18 +1,28 @@
 This is a wrapper for the [libfreenect](https://github.com/OpenKinect/libfreenect) library written in Go.
 
 ## Installation and Usage
-$ go get github.com/acj/gonect/src/gonect_samples
-$ go get github.com/acj/gonect/src/gonect_shell     # optional but recommended
-$ gonect_samples
+    $ go get github.com/acj/gonect/src/gonect_samples
 
-Tilting down
-		 [...]
-Tilting up
-		 [...]
-Tilting level
-		 [...]
-Changing LED status
-		 [...]
+    $ go get github.com/acj/gonect/src/gonect_shell     # optional but recommended
+
+    $ gonect_samples
+
+    Tilting down
+
+    [...]
+		 
+    Tilting up
+
+    [...]
+		 
+    Tilting level
+
+    [...]
+		 
+    Changing LED status
+
+    [...]
+		 
 
 TODO
 ====
