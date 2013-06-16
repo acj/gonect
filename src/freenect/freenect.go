@@ -35,9 +35,18 @@ freenect_raw_tilt_state* create_tilt_state() {
 int freenect_init_proxy() {
     return freenect_init(&f_ctx, NULL);
 }
+
+uint8_t get_byte(void *buf, int offset)
+{
+	return *((uint8_t *)buf + offset);
+}
 */
 import "C"
-import "unsafe"
+
+import (
+	"image"
+	"unsafe"
+)
 
 type TiltState struct {
 	Accelerometer_x int16
@@ -137,6 +146,29 @@ func GetDepth(device_index int, format VideoFormat) (unsafe.Pointer, uint32) {
 		return nil, 0
 	}
 	return data, uint32(timestamp)
+}
+
+func GetRGBAFrame(device_index int) *image.RGBA {
+	data, _ := GetVideo(device_index, FREENECT_VIDEO_RGB)
+
+ 	r := image.Rect(0, 0, 640, 480)
+ 	img := image.NewRGBA(r)
+
+ 	for row := 0; row < 480; row++ {
+ 		for col := 0; col < 640; col++ {
+ 			targetPos := C.int(row*640*4 + col*4)
+ 			sourcePos := C.int(row*640*3 + col*3)
+
+ 			img.Pix[targetPos]     = uint8(C.get_byte(data, sourcePos))
+ 			img.Pix[targetPos + 1] = uint8(C.get_byte(data, sourcePos + 1))
+ 			img.Pix[targetPos + 2] = uint8(C.get_byte(data, sourcePos + 2))
+ 			img.Pix[targetPos + 3] = 1
+ 		}
+ 	}
+
+ 	img.Stride = 640 * 4;
+
+ 	return img
 }
 
 func GetTiltDegs(ts TiltState) float32 {
