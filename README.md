@@ -1,4 +1,6 @@
-# Wrapper for the [libfreenect](https://github.com/OpenKinect/libfreenect) library written in Go.
+# gonect
+
+This is a Go wrapper for the [libfreenect](https://github.com/OpenKinect/libfreenect) library.
 
 ## Installation and Usage
 
