@@ -20,7 +20,7 @@ package main
 
 import (
 	"fmt"
-	"freenect"
+	"github.com/acj/gonect/src/freenect"
 	"os"
 	"text/scanner"
 	"strconv"
