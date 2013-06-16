@@ -178,9 +178,7 @@ func GetTiltDegs(ts TiltState) float32 {
 
 // Set the tilt angle (in degrees)
 func SetTiltDegs(degs int, device_index int) uint {
-	c_degs := C.int(degs)
-	c_ndx := C.int(device_index)
-	return uint(C.freenect_sync_set_tilt_degs(c_degs, c_ndx))
+	return uint(C.freenect_sync_set_tilt_degs(C.int(degs), C.int(device_index)))
 }
 
 func GetTiltState(device_index int) TiltState {
