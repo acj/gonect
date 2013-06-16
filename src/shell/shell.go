@@ -47,6 +47,9 @@ func main() {
 		}
 
 		switch {
+		case cmd == "help":
+			showHelpMessage()
+			break
 		case cmd == "tilt":
 			s.Scan()
 			arg, _ = strconv.Atoi(s.TokenText())
@@ -83,6 +86,18 @@ func main() {
 		fmt.Printf("gonect> ")
 		s.Scan()
 	} 
+}
+
+func showHelpMessage() {
+	fmt.Println(
+		"Available commands:\n\n",
+		"tilt <degrees [-30,30]>\tTilt the Kinect\n",
+		"led <off,green,red,yellow,blink_yellow,blink_green,blink_red_yellow>\n",
+		"\t\t\t\tChange the color of the LED indicator\n",
+		"rgb_frame <filename.jpg>\tSave an RGBA frame from the color camera\n",
+		"ir_frame <filename.jpg>\tSave an infrared frame from the IR camera\n",
+		"depth_frame <filename.jpg>\tSave a B&W frame from the depth camera\n",
+		"quit\t\t\t\tExit this shell interpreter")
 }
 
 func flash_led(d *freenect.FreenectDevice, led string) {
