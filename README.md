@@ -1,14 +1,18 @@
 This is a wrapper for the [libfreenect](https://github.com/OpenKinect/libfreenect) library written in Go.
 
-Installation
-============
-$ make install
+## Installation and Usage
+$ go get github.com/acj/gonect/src/gonect_samples
+$ go get github.com/acj/gonect/src/gonect_shell     # optional but recommended
+$ gonect_samples
 
-Sample Usage
-============
-$ cd demo
-
-$ make main; ./main
+Tilting down
+		 [...]
+Tilting up
+		 [...]
+Tilting level
+		 [...]
+Changing LED status
+		 [...]
 
 TODO
 ====
@@ -16,10 +20,14 @@ TODO
 * ~~Tilting~~
 * ~~LED colors~~
 * ~~Get number of devices~~
-* Video (via opencv)
+* ~~Image capture~~
     * ~~RGB Camera~~
 	* ~~Depth Camera~~
 	* ~~IR Camera~~
+* Video
+    * RGB Camera
+	* Depth Camera
+	* IR Camera
 * Microphones
 
 * ~~Wrap libfreenect "C sync" functions~~
