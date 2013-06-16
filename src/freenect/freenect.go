@@ -12,7 +12,7 @@ See the License for the specific language governing permissions and
 limitations under the License.
 */
 
-// gonect package, a wrapper for the libfreenect library.
+// freenect package, a wrapper for the libfreenect C library.
 //
 // Author: Adam Jensen <acj@linuxguy.org>
 

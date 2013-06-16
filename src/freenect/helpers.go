@@ -12,7 +12,7 @@ See the License for the specific language governing permissions and
 limitations under the License.
 */
 
-// Example driver program for using the gonect package.
+// Helper methods for the freenect package.
 //
 // Author: Adam Jensen <acj@linuxguy.org>
 
