@@ -28,8 +28,11 @@ import (
 )
 
 const OutOfRange = 1024
+const StartWithDevice = 0
 
 func main() {
+	d := freenect.NewFreenectDevice(StartWithDevice)
+
 	var s scanner.Scanner
 	s.Init(os.Stdin)
 
@@ -50,26 +53,26 @@ func main() {
 			arg, _ = strconv.Atoi(s.TokenText())
 			if arg == OutOfRange { break }
 
-			freenect.SetTiltDegs(arg, 0)
+			d.SetTiltDegs(arg)
 
 			cmd = ""
 			arg = OutOfRange
 		case cmd == "led":
 			s.Scan()
 			led_string := s.TokenText()
-			flash_led(led_string)
+			flash_led(d, led_string)
 			break
 		case cmd == "rgb_frame":
 			driver.TestRGBAFrame(0)
 			break
 		case cmd == "rgb_video":
-			driver.TestVideo(0)
+			freenect.TestVideo(d)
 			break
 		case cmd == "ir_video":
-			driver.TestIR(0)
+			freenect.TestIR(d)
 			break
 		case cmd == "depth_video":
-			driver.TestDepth(0)
+			freenect.TestDepth(d)
 			break
 		case cmd == "quit":
 			return
@@ -80,28 +83,28 @@ func main() {
 	} 
 }
 
-func flash_led(led string) {
+func flash_led(d *freenect.FreenectDevice, led string) {
 	switch {
 	case led == "off":
-		freenect.SetLed(freenect.LED_OFF, 0)
+		d.SetLed(freenect.LED_OFF)
 		break
 	case led == "green":
-		freenect.SetLed(freenect.LED_GREEN, 0)
+		d.SetLed(freenect.LED_GREEN)
 		break
 	case led == "red":
-		freenect.SetLed(freenect.LED_RED, 0)
+		d.SetLed(freenect.LED_RED)
 		break
 	case led == "yellow":
-		freenect.SetLed(freenect.LED_YELLOW, 0)
+		d.SetLed(freenect.LED_YELLOW)
 		break
 	case led == "blink_yellow":
-		freenect.SetLed(freenect.LED_BLINK_YELLOW, 0)
+		d.SetLed(freenect.LED_BLINK_YELLOW)
 		break
 	case led == "blink_green":
-		freenect.SetLed(freenect.LED_BLINK_GREEN, 0)
+		d.SetLed(freenect.LED_BLINK_GREEN)
 		break
 	case led == "blink_red_yellow":
-		freenect.SetLed(freenect.LED_BLINK_RED_YELLOW, 0)
+		d.SetLed(freenect.LED_BLINK_RED_YELLOW)
 		break
 	}
 }

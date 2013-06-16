@@ -25,15 +25,16 @@ package freenect
 #include <stdio.h>
 #include <libfreenect.h>
 #include <libfreenect_sync.h>
-freenect_context* f_ctx;
 
 freenect_raw_tilt_state* create_tilt_state() {
     freenect_raw_tilt_state *ts = malloc(sizeof(freenect_raw_tilt_state));
     return ts;
 }
 
-int freenect_init_proxy() {
-    return freenect_init(&f_ctx, NULL);
+freenect_context * freenect_init_proxy() {
+	freenect_context* f_ctx;
+	freenect_init(&f_ctx, NULL);
+    return f_ctx;
 }
 
 uint8_t get_byte(void *buf, int offset)
@@ -47,6 +48,12 @@ import (
 	"image"
 	"unsafe"
 )
+
+type FreenectDevice struct {
+	DeviceIndex       int
+	DeviceIndexCType  C.int
+	DeviceContext    *C.freenect_context
+}
 
 type TiltState struct {
 	Accelerometer_x int16
@@ -124,32 +131,36 @@ func ConvertGoTiltStructToC(ts TiltState) *C.freenect_raw_tilt_state {
 	return c_ts
 }
 
-func Init() uint {
-	return uint(C.freenect_init_proxy())
+func NewFreenectDevice(device_index int) *FreenectDevice {
+	return &FreenectDevice{device_index, C.int(device_index), initDeviceContext()}
 }
 
-func GetVideo(device_index int, format VideoFormat) (unsafe.Pointer, uint32) {
+func initDeviceContext() *C.freenect_context {
+	return C.freenect_init_proxy()
+}
+
+func (d *FreenectDevice) RawRGBFrame(format VideoFormat) (unsafe.Pointer, uint32) {
 	var data unsafe.Pointer
 	var timestamp C.uint32_t
-	out := C.freenect_sync_get_video(&data, &timestamp, C.int(device_index), C.freenect_video_format(format))
+	out := C.freenect_sync_get_video(&data, &timestamp, d.DeviceIndexCType, C.freenect_video_format(format))
 	if out > 0 {
 		return nil, 0
 	}
 	return data, uint32(timestamp)
 }
 
-func GetDepth(device_index int, format VideoFormat) (unsafe.Pointer, uint32) {
+func (d *FreenectDevice) RawDepthFrame(format VideoFormat) (unsafe.Pointer, uint32) {
 	var data unsafe.Pointer
 	var timestamp C.uint32_t
-	out := C.freenect_sync_get_depth(&data, &timestamp, C.int(device_index), C.freenect_depth_format(format))
+	out := C.freenect_sync_get_depth(&data, &timestamp, d.DeviceIndexCType, C.freenect_depth_format(format))
 	if out > 0 {
 		return nil, 0
 	}
 	return data, uint32(timestamp)
 }
 
-func GetRGBAFrame(device_index int) *image.RGBA {
-	data, _ := GetVideo(device_index, FREENECT_VIDEO_RGB)
+func (d *FreenectDevice) RGBAFrame() *image.RGBA {
+	data, _ := d.RawRGBFrame(FREENECT_VIDEO_RGB)
 
  	r := image.Rect(0, 0, 640, 480)
  	img := image.NewRGBA(r)
@@ -171,41 +182,89 @@ func GetRGBAFrame(device_index int) *image.RGBA {
  	return img
 }
 
-func GetTiltDegs(ts TiltState) float32 {
+func (d *FreenectDevice) IRFrame() *image.RGBA {
+	data, _ := d.RawRGBFrame(FREENECT_VIDEO_IR_8BIT)
+
+ 	r := image.Rect(0, 0, 640, 480)
+ 	img := image.NewRGBA(r)
+
+ 	for row := 0; row < 480; row++ {
+ 		for col := 0; col < 640; col++ {
+ 			targetPos := C.int(row*640*4 + col*4)
+ 			sourcePos := C.int(row*640 + col)
+
+ 			val := uint8(C.get_byte(data, sourcePos))
+ 			img.Pix[targetPos]     = val
+ 			img.Pix[targetPos + 1] = val
+ 			img.Pix[targetPos + 2] = val
+ 			img.Pix[targetPos + 3] = 0xff
+ 		}
+ 	}
+
+ 	img.Stride = 640 * 4;
+
+ 	return img
+}
+
+func (d *FreenectDevice) DepthFrame() *image.RGBA {
+	data, _ := d.RawDepthFrame(FREENECT_DEPTH_REGISTERED)
+
+ 	r := image.Rect(0, 0, 640, 480)
+ 	img := image.NewRGBA(r)
+
+ 	for row := 0; row < 480; row++ {
+ 		for col := 0; col < 640; col++ {
+ 			targetPos := C.int(row*640*4 + col*4)
+ 			sourcePos := C.int(row*640*2 + col*2)
+
+ 			val := uint8(C.get_byte(data, sourcePos))
+ 			img.Pix[targetPos]     = val
+ 			img.Pix[targetPos + 1] = val
+ 			img.Pix[targetPos + 2] = val
+ 			img.Pix[targetPos + 3] = 1
+ 		}
+ 	}
+
+ 	img.Stride = 640 * 4;
+
+ 	return img
+}
+
+func (d *FreenectDevice) GetTiltDegs(ts TiltState) float32 {
 	c_ts := ConvertGoTiltStructToC(ts)
 	return float32(C.freenect_get_tilt_degs(c_ts))
 }
 
 // Set the tilt angle (in degrees)
-func SetTiltDegs(degs int, device_index int) uint {
-	return uint(C.freenect_sync_set_tilt_degs(C.int(degs), C.int(device_index)))
+func (d *FreenectDevice) SetTiltDegs(degs int) uint {
+	// TODO: Check result
+	return uint(C.freenect_sync_set_tilt_degs(C.int(degs), d.DeviceIndexCType))
 }
 
-func GetTiltState(device_index int) TiltState {
+func (d *FreenectDevice) GetTiltState() TiltState {
 	c_ts := (*C.freenect_raw_tilt_state)(C.create_tilt_state())
-	C.freenect_sync_get_tilt_state(&c_ts, C.int(device_index))
+	C.freenect_sync_get_tilt_state(&c_ts, d.DeviceIndexCType)
 	ts := ConvertCTiltStructToGo(c_ts)
 	return ts
 }
 
-func GetTiltStatus(ts TiltState, device_index int) TiltStatusCode {
-	tsc := TiltStatusCode(C.freenect_get_tilt_status(ConvertGoTiltStructToC(ts)))
-	return tsc
+func (d *FreenectDevice) GetTiltStatus(ts TiltState) TiltStatusCode {
+	return TiltStatusCode(C.freenect_get_tilt_status(ConvertGoTiltStructToC(ts)))
 }
 
-func SetLed(color uint, device_index int) uint {
-	C.freenect_sync_set_led(C.freenect_led_options(color), C.int(device_index))
-	return 0
+func (d *FreenectDevice) SetLed(color uint) {
+	// TODO: Check result
+	C.freenect_sync_set_led(C.freenect_led_options(color), d.DeviceIndexCType)
 }
 
-func GetNumDevices() uint {
-	return uint(C.freenect_num_devices(C.f_ctx))
+func (d *FreenectDevice) GetNumDevices() uint {
+	return uint(C.freenect_num_devices(d.DeviceContext))
 }
 
-func Stop() {
+func (d *FreenectDevice) Stop() {
 	C.freenect_sync_stop()
 }
 
-func Shutdown() {
-	C.freenect_shutdown(C.f_ctx)
+func (d *FreenectDevice)  Shutdown() {
+	C.freenect_shutdown(d.DeviceContext)
 }
